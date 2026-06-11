@@ -32,10 +32,7 @@ class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
     """Representation of an Optimal Tankless water heater."""
 
     _attr_temperature_unit = UnitOfTemperature.FAHRENHEIT
-    _attr_supported_features = (
-        WaterHeaterEntityFeature.TARGET_TEMPERATURE
-        | WaterHeaterEntityFeature.AWAY_MODE
-    )
+    _attr_supported_features = WaterHeaterEntityFeature.TARGET_TEMPERATURE
     _attr_min_temp = MIN_TEMP_F
     _attr_max_temp = MAX_TEMP_F
 
@@ -47,8 +44,6 @@ class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
     @property
     def current_operation(self) -> str:
         """Return current operation."""
-        if self.coordinator.data.get("vacation_mode"):
-            return "away"
         if self.coordinator.data.get("heating"):
             return "heat_pump"  # closest HA operation for active heating
         return "idle"
@@ -56,7 +51,7 @@ class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
     @property
     def operation_list(self) -> list[str]:
         """Return supported operations."""
-        return ["idle", "heat_pump", "away"]
+        return ["idle", "heat_pump"]
 
     @property
     def current_temperature(self) -> float | None:
@@ -70,9 +65,8 @@ class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
 
     @property
     def is_away_mode_on(self) -> bool | None:
-        """Return whether vacation mode is active."""
-        value = self.coordinator.data.get("vacation_mode")
-        return bool(value) if value is not None else None
+        """Vacation/away mode is not exposed until configData bits are mapped."""
+        return None
 
     async def async_set_temperature(self, **kwargs: Any) -> None:
         """Set target temperature."""
@@ -81,19 +75,5 @@ class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
             return
         await self.coordinator.api.async_set_temperature(
             self.coordinator.device_id, float(temperature)
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_turn_away_mode_on(self) -> None:
-        """Enable vacation mode."""
-        await self.coordinator.api.async_set_vacation_mode(
-            self.coordinator.device_id, True
-        )
-        await self.coordinator.async_request_refresh()
-
-    async def async_turn_away_mode_off(self) -> None:
-        """Disable vacation mode."""
-        await self.coordinator.api.async_set_vacation_mode(
-            self.coordinator.device_id, False
         )
         await self.coordinator.async_request_refresh()

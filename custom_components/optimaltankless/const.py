@@ -33,10 +33,12 @@ ATTR_HEATER_CAPACITY = "heater_capacity"
 ATTR_AVAILABLE_FLOW = "available_flow_rate"
 ATTR_INPUT_VOLTAGE = "input_voltage"
 ATTR_ERROR_CODE = "error_code"
+ATTR_CONFIG_DATA = "config_data"
 
 MIN_TEMP_F = 80
 MAX_TEMP_F = 140
 
-# configData bit flag for vacation mode — confirm by toggling in app and
-# comparing GET /client/device/{serial}/commands (current unit uses configData=38).
-VACATION_MODE_CONFIG_BIT = 0x02
+# configData bit flags are undocumented by Optimal. Bit 0x02 is set during
+# normal operation (configData=38 on verified units) and is NOT vacation mode.
+# Vacation detection is disabled until the correct bit/value is confirmed.
+VACATION_MODE_CONFIG_BIT = 0x02  # reserved — do not use for read/write yet

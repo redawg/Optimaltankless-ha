@@ -21,10 +21,12 @@ from homeassistant.const import (
     UnitOfVolumeFlowRate,
 )
 from homeassistant.core import HomeAssistant, callback
+from homeassistant.helpers.entity import EntityCategory
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
 from .const import (
     ATTR_AVAILABLE_FLOW,
+    ATTR_CONFIG_DATA,
     ATTR_ERROR_CODE,
     ATTR_FLOW_RATE,
     ATTR_HEATER_CAPACITY,
@@ -101,6 +103,12 @@ SENSORS: tuple[OptimalTanklessSensorDescription, ...] = (
         key="error_code",
         data_key=ATTR_ERROR_CODE,
         translation_key="error_code",
+    ),
+    OptimalTanklessSensorDescription(
+        key="config_data",
+        data_key=ATTR_CONFIG_DATA,
+        translation_key="config_data",
+        entity_category=EntityCategory.DIAGNOSTIC,
     ),
 )
 

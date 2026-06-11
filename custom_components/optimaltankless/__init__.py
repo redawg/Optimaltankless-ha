@@ -33,7 +33,6 @@ PLATFORMS = [
     Platform.WATER_HEATER,
     Platform.SENSOR,
     Platform.BINARY_SENSOR,
-    Platform.SWITCH,
 ]
 
 if TYPE_CHECKING:

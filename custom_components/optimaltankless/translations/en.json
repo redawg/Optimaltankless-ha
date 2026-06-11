@@ -35,7 +35,8 @@
       "input_voltage": { "name": "Input voltage" },
       "heater_capacity": { "name": "Heater capacity" },
       "available_flow_rate": { "name": "Available flow rate" },
-      "error_code": { "name": "Error code" }
+      "error_code": { "name": "Error code" },
+      "config_data": { "name": "Config data" }
     },
     "binary_sensor": {
       "heating": { "name": "Heating" },

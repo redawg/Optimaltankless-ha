@@ -193,7 +193,7 @@ class OptimalTanklessAPI:
             "available_flow_rate": self._scale(
                 snapshot.get("flowCapacity"), FLOW_RATE_SCALE
             ),
-            "vacation_mode": bool(config_data & VACATION_MODE_CONFIG_BIT),
+            "vacation_mode": False,
             "error_code": snapshot.get("error")
             or snapshot.get("heaterError")
             or snapshot.get("sensorError"),
