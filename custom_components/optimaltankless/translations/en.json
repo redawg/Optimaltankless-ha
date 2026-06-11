@@ -1,0 +1,46 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Optimal Tankless",
+        "description": "Enter the serial number from your Opti+ label or the Optimal° app. No cloud account is required — the heater is controlled via its public device API.",
+        "data": {
+          "serial_number": "Serial number",
+          "device_name": "Name (optional)"
+        }
+      }
+    },
+    "error": {
+      "invalid_serial": "Serial number must be numeric.",
+      "device_not_found": "Could not reach that heater. Check the serial number and that the unit is online."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "data": {
+          "scan_interval": "Polling interval (seconds)"
+        }
+      }
+    }
+  },
+  "entity": {
+    "sensor": {
+      "inlet_temperature": { "name": "Inlet temperature" },
+      "outlet_temperature": { "name": "Outlet temperature" },
+      "flow_rate": { "name": "Flow rate" },
+      "power": { "name": "Power draw" },
+      "input_voltage": { "name": "Input voltage" },
+      "heater_capacity": { "name": "Heater capacity" },
+      "available_flow_rate": { "name": "Available flow rate" },
+      "error_code": { "name": "Error code" }
+    },
+    "binary_sensor": {
+      "heating": { "name": "Heating" },
+      "online": { "name": "Online" }
+    },
+    "switch": {
+      "vacation_mode": { "name": "Vacation mode" }
+    }
+  }
+}

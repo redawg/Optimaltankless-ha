@@ -1,0 +1,16 @@
+captures/
+*.har
+.env
+__pycache__/
+*.pyc
+.python-version
+tools/apk/*.xapk
+tools/apk/*.apk
+tools/apk/*.zip
+tools/apk/apk_unpacked/
+tools/apk/xapk_extracted/
+tools/apk/apkeep.exe
+tools/apk/extracted_strings.txt
+tools/apk/hwbe_swagger_init.js
+tools/apk/optimal.zip
+tools/apk/optimalapp.apk
