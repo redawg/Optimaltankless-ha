@@ -110,16 +110,19 @@ async def hacs_deploy() -> bool:
                 return False
 
             msg_id += 1
-            await ws_call(
-                ws,
-                msg_id,
-                {
-                    "type": "call_service",
-                    "domain": "homeassistant",
-                    "service": "restart",
-                    "service_data": {},
-                },
-            )
+            try:
+                await ws_call(
+                    ws,
+                    msg_id,
+                    {
+                        "type": "call_service",
+                        "domain": "homeassistant",
+                        "service": "restart",
+                        "service_data": {},
+                    },
+                )
+            except aiohttp.client_exceptions.WSMessageTypeError:
+                pass
             print("HA restart requested")
             return True
 
