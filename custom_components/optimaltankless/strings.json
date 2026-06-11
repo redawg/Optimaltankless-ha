@@ -31,6 +31,7 @@
       "outlet_temperature": { "name": "Outlet temperature" },
       "flow_rate": { "name": "Flow rate" },
       "power": { "name": "Power draw" },
+      "energy_consumption": { "name": "Energy consumption" },
       "input_voltage": { "name": "Input voltage" },
       "heater_capacity": { "name": "Heater capacity" },
       "available_flow_rate": { "name": "Available flow rate" },

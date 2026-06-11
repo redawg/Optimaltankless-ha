@@ -186,6 +186,7 @@ class OptimalTanklessAPI:
             "outlet_temperature": snapshot.get("outputTemp"),
             "inlet_temperature": snapshot.get("inputTemp"),
             "flow_rate_gpm": self._scale(snapshot.get("flowRate"), FLOW_RATE_SCALE),
+            "power_w": float(heater_power or 0),
             "power_kw": self._scale(heater_power, POWER_SCALE),
             "input_voltage": snapshot.get("acVoltage"),
             "heater_capacity": snapshot.get("heatCapacity"),

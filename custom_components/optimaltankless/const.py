@@ -27,6 +27,7 @@ def entry_options(entry) -> dict:
 ATTR_FLOW_RATE = "flow_rate_gpm"
 ATTR_INLET_TEMP = "inlet_temperature"
 ATTR_OUTLET_TEMP = "outlet_temperature"
+ATTR_POWER_W = "power_w"
 ATTR_POWER_KW = "power_kw"
 ATTR_HEATER_CAPACITY = "heater_capacity"
 ATTR_AVAILABLE_FLOW = "available_flow_rate"

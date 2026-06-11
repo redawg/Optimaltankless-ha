@@ -17,7 +17,7 @@ Example serial: `1212230005`
 
 - Water heater setpoint control
 - Vacation mode (via device `configData` flags)
-- Live telemetry: inlet/outlet temp, flow, power, voltage, diagnostics
+- Live telemetry: inlet/outlet temp, flow, power, energy, voltage, diagnostics
 - Cloud polling (default 30s, configurable 15–300s)
 
 ## Polling interval
@@ -44,6 +44,24 @@ data:
 ```
 
 Changes apply immediately without restarting Home Assistant.
+
+## Energy dashboard
+
+The integration exposes two electricity entities per heater:
+
+| Entity | Use in Energy dashboard |
+|--------|-------------------------|
+| **Power draw** (`sensor.*_power`) | Real-time watts — add under **Individual devices** |
+| **Energy consumption** (`sensor.*_energy_consumption`) | Cumulative kWh — add under **Individual devices** |
+
+Energy is estimated by integrating power between cloud polls (trapezoidal rule). It persists across HA restarts but does not backfill gaps while HA is offline.
+
+1. **Settings → Dashboards → Energy → Configure**
+2. Under **Electricity → Individual devices**, click **Add device**
+3. Select **Energy consumption** (or **Power draw**) for your water heater
+4. Save
+
+If an entity does not appear in the picker, confirm it has state in **Developer tools → States** and no issues under **Developer tools → Statistics**.
 
 ## API
 
