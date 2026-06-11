@@ -3,10 +3,10 @@
   "name": "Optimal Tankless",
   "codeowners": ["@andre"],
   "config_flow": true,
-  "documentation": "https://github.com/andre/Optimaltankless-ha",
+  "documentation": "https://github.com/redawg/Optimaltankless-ha",
   "integration_type": "hub",
   "iot_class": "cloud_polling",
-  "issue_tracker": "https://github.com/andre/Optimaltankless-ha/issues",
+  "issue_tracker": "https://github.com/redawg/Optimaltankless-ha/issues",
   "requirements": ["aiohttp>=3.9.0"],
   "version": "0.3.0"
 }
