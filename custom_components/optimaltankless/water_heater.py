@@ -5,6 +5,8 @@ from __future__ import annotations
 from typing import Any
 
 from homeassistant.components.water_heater import (
+    STATE_ELECTRIC,
+    STATE_OFF,
     WaterHeaterEntity,
     WaterHeaterEntityFeature,
 )
@@ -29,7 +31,7 @@ async def async_setup_entry(
 
 
 class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
-    """Representation of an Optimal Tankless water heater."""
+    """Representation of an Optimal electric tankless water heater."""
 
     _attr_temperature_unit = UnitOfTemperature.FAHRENHEIT
     _attr_supported_features = WaterHeaterEntityFeature.TARGET_TEMPERATURE
@@ -45,13 +47,13 @@ class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
     def current_operation(self) -> str:
         """Return current operation."""
         if self.coordinator.data.get("heating"):
-            return "heat_pump"  # closest HA operation for active heating
-        return "idle"
+            return STATE_ELECTRIC
+        return STATE_OFF
 
     @property
     def operation_list(self) -> list[str]:
         """Return supported operations."""
-        return ["idle", "heat_pump"]
+        return [STATE_OFF, STATE_ELECTRIC]
 
     @property
     def current_temperature(self) -> float | None:

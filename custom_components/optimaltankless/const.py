@@ -37,6 +37,9 @@ ATTR_CONFIG_DATA = "config_data"
 
 MIN_TEMP_F = 80
 MAX_TEMP_F = 140
+MAX_POWER_KW = 12
+MAX_POWER_W = MAX_POWER_KW * 1000
+DEVICE_MODEL = "Electric Tankless Water Heater"
 
 
 def clamp_temperature_f(value: float | int | None) -> float | None:

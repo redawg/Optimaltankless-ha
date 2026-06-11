@@ -34,6 +34,7 @@ from .const import (
     ATTR_INPUT_VOLTAGE,
     ATTR_OUTLET_TEMP,
     ATTR_POWER_W,
+    MAX_POWER_KW,
 )
 from .coordinator import OptimalTanklessCoordinator
 from .entity import OptimalTanklessEntity
@@ -145,6 +146,13 @@ class OptimalTanklessSensor(OptimalTanklessEntity, SensorEntity):
     def native_value(self) -> str | float | None:
         """Return sensor value."""
         return self.coordinator.data.get(self.entity_description.data_key)
+
+    @property
+    def extra_state_attributes(self) -> dict[str, float] | None:
+        """Expose rated max draw on the power sensor."""
+        if self.entity_description.key != "power":
+            return None
+        return {"max_power_kw": MAX_POWER_KW}
 
 
 class OptimalTanklessEnergySensor(OptimalTanklessEntity, RestoreSensor, SensorEntity):

@@ -5,7 +5,7 @@ from __future__ import annotations
 from homeassistant.helpers.device_registry import DeviceInfo
 from homeassistant.helpers.update_coordinator import CoordinatorEntity
 
-from .const import DOMAIN
+from .const import DEVICE_MODEL, DOMAIN
 from .coordinator import OptimalTanklessCoordinator
 
 
@@ -31,6 +31,6 @@ class OptimalTanklessEntity(CoordinatorEntity[OptimalTanklessCoordinator]):
             or device.get("name")
             or f"Opti {serial}",
             manufacturer="Its Optimal LLC",
-            model=device.get("model"),
+            model=device.get("model") or DEVICE_MODEL,
             sw_version=device.get("firmware_version"),
         )
