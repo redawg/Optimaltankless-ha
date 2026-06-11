@@ -23,6 +23,7 @@ from .const import (
     MAX_SCAN_INTERVAL,
     MIN_SCAN_INTERVAL,
     SERVICE_SET_SCAN_INTERVAL,
+    entry_options,
 )
 from .coordinator import OptimalTanklessCoordinator
 
@@ -53,7 +54,9 @@ SET_SCAN_INTERVAL_SCHEMA = vol.Schema(
 
 def _scan_interval_from_entry(entry: ConfigEntry) -> int:
     """Return the configured polling interval for a config entry."""
-    return int(entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+    return int(
+        entry_options(entry).get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+    )
 
 
 async def _async_update_listener(
@@ -81,7 +84,10 @@ async def _async_set_scan_interval(hass: HomeAssistant, call: ServiceCall) -> No
     for entry in entries:
         hass.config_entries.async_update_entry(
             entry,
-            options={**entry.options, CONF_SCAN_INTERVAL: scan_interval},
+            options={
+                **entry_options(entry),
+                CONF_SCAN_INTERVAL: scan_interval,
+            },
         )
 
 

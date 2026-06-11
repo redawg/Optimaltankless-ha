@@ -19,6 +19,11 @@ MAX_SCAN_INTERVAL = 300
 
 SERVICE_SET_SCAN_INTERVAL = "set_scan_interval"
 
+
+def entry_options(entry) -> dict:
+    """Return config entry options, treating unset options as empty."""
+    return dict(entry.options or {})
+
 ATTR_FLOW_RATE = "flow_rate_gpm"
 ATTR_INLET_TEMP = "inlet_temperature"
 ATTR_OUTLET_TEMP = "outlet_temperature"

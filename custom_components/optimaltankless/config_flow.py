@@ -20,6 +20,7 @@ from .const import (
     DOMAIN,
     MAX_SCAN_INTERVAL,
     MIN_SCAN_INTERVAL,
+    entry_options,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -87,15 +88,11 @@ class OptimalTanklessConfigFlow(ConfigFlow, domain=DOMAIN):
     @callback
     def async_get_options_flow(config_entry) -> OptionsFlow:
         """Return options flow handler."""
-        return OptimalTanklessOptionsFlowHandler(config_entry)
+        return OptimalTanklessOptionsFlowHandler()
 
 
 class OptimalTanklessOptionsFlowHandler(OptionsFlow):
     """Handle options."""
-
-    def __init__(self, config_entry) -> None:
-        """Initialize options flow."""
-        self.config_entry = config_entry
 
     async def async_step_init(
         self, user_input: dict[str, Any] | None = None
@@ -104,13 +101,14 @@ class OptimalTanklessOptionsFlowHandler(OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
+        options = entry_options(self.config_entry)
         return self.async_show_form(
             step_id="init",
             data_schema=vol.Schema(
                 {
                     vol.Optional(
                         CONF_SCAN_INTERVAL,
-                        default=self.config_entry.options.get(
+                        default=options.get(
                             CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
                         ),
                     ): SCAN_INTERVAL_SCHEMA,

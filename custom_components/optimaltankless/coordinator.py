@@ -11,7 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import OptimalTanklessAPI, OptimalTanklessAuthError, OptimalTanklessConnectionError
-from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN
+from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN, entry_options
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,7 +30,9 @@ class OptimalTanklessCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.entry = entry
         self.api = api
         self.device_id = device_id
-        scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
+        scan_interval = entry_options(entry).get(
+            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+        )
         super().__init__(
             hass,
             _LOGGER,
