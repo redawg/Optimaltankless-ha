@@ -13,7 +13,7 @@ from typing import Any
 
 import aiohttp
 
-from .const import API_BASE_URL, VACATION_MODE_CONFIG_BIT
+from .const import MIN_TEMP_F, VACATION_MODE_CONFIG_BIT, clamp_temperature_f
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -123,6 +123,7 @@ class OptimalTanklessAPI:
         self, serial_number: str | int, temperature_f: float
     ) -> None:
         """Set target output temperature in Fahrenheit."""
+        temperature_f = clamp_temperature_f(temperature_f) or MIN_TEMP_F
         command = await self.async_get_device_command(serial_number)
         await self.async_set_command(
             serial_number,
@@ -172,6 +173,7 @@ class OptimalTanklessAPI:
             voltage_scale = command.get("voltageScale", voltage_scale)
 
         heater_power = snapshot.get("heaterPower") or 0
+        target_temperature = clamp_temperature_f(target_temperature)
 
         return {
             "serial_number": serial_number,

@@ -13,7 +13,7 @@ from homeassistant.const import UnitOfTemperature
 from homeassistant.core import HomeAssistant
 from homeassistant.helpers.entity_platform import AddEntitiesCallback
 
-from .const import DOMAIN, MAX_TEMP_F, MIN_TEMP_F
+from .const import MAX_TEMP_F, MIN_TEMP_F, clamp_temperature_f
 from .coordinator import OptimalTanklessCoordinator
 from .entity import OptimalTanklessEntity
 
@@ -60,8 +60,8 @@ class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
 
     @property
     def target_temperature(self) -> float | None:
-        """Return target setpoint."""
-        return self.coordinator.data.get("target_temperature")
+        """Return target setpoint clamped to the heater's supported range."""
+        return clamp_temperature_f(self.coordinator.data.get("target_temperature"))
 
     @property
     def is_away_mode_on(self) -> bool | None:
@@ -73,7 +73,10 @@ class OptimalTanklessWaterHeater(OptimalTanklessEntity, WaterHeaterEntity):
         temperature = kwargs.get("temperature")
         if temperature is None:
             return
+        temperature = clamp_temperature_f(float(temperature))
+        if temperature is None:
+            return
         await self.coordinator.api.async_set_temperature(
-            self.coordinator.device_id, float(temperature)
+            self.coordinator.device_id, temperature
         )
         await self.coordinator.async_request_refresh()

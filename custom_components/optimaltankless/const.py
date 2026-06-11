@@ -38,6 +38,13 @@ ATTR_CONFIG_DATA = "config_data"
 MIN_TEMP_F = 80
 MAX_TEMP_F = 140
 
+
+def clamp_temperature_f(value: float | int | None) -> float | None:
+    """Clamp a setpoint to the heater's supported Fahrenheit range."""
+    if value is None:
+        return None
+    return float(max(MIN_TEMP_F, min(MAX_TEMP_F, float(value))))
+
 # configData bit flags are undocumented by Optimal. Bit 0x02 is set during
 # normal operation (configData=38 on verified units) and is NOT vacation mode.
 # Vacation detection is disabled until the correct bit/value is confirmed.
