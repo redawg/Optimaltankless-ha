@@ -11,7 +11,7 @@ from homeassistant.core import HomeAssistant
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator, UpdateFailed
 
 from .api import OptimalTanklessAPI, OptimalTanklessAuthError, OptimalTanklessConnectionError
-from .const import DEFAULT_SCAN_INTERVAL, DOMAIN
+from .const import CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL, DOMAIN
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -30,13 +30,22 @@ class OptimalTanklessCoordinator(DataUpdateCoordinator[dict[str, Any]]):
         self.entry = entry
         self.api = api
         self.device_id = device_id
-        scan_interval = entry.options.get("scan_interval", DEFAULT_SCAN_INTERVAL)
+        scan_interval = entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL)
         super().__init__(
             hass,
             _LOGGER,
             name=f"{DOMAIN}_{device_id}",
             update_interval=timedelta(seconds=scan_interval),
         )
+
+    def set_scan_interval(self, scan_interval: int) -> None:
+        """Apply a new polling interval without reloading the integration."""
+        self.update_interval = timedelta(seconds=scan_interval)
+        if self._unsub_refresh:
+            self._unsub_refresh()
+            self._unsub_refresh = None
+        if not self.disabled:
+            self._schedule_refresh()
 
     async def _async_update_data(self) -> dict[str, Any]:
         """Poll cloud API for the latest device state."""

@@ -1,0 +1,26 @@
+set_scan_interval:
+  name: Set polling interval
+  description: >
+    Change how often the integration polls the Optimal cloud for this device.
+    Other automations and integrations can call this service, or use the
+    config_entries.update action with an options.scan_interval value.
+  fields:
+    config_entry_id:
+      name: Config entry
+      description: Optimal Tankless device to update. Updates all entries if omitted.
+      required: false
+      selector:
+        config_entry:
+          integration: optimaltankless
+    scan_interval:
+      name: Polling interval
+      description: Seconds between cloud polls (15–300).
+      required: true
+      example: 30
+      selector:
+        number:
+          min: 15
+          max: 300
+          step: 5
+          unit_of_measurement: s
+          mode: slider

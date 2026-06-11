@@ -12,7 +12,12 @@ API_BASE_URL = "https://hwbe.itsoptimal.com"
 # Mobile app uses this BFF; HWBE client routes work directly for integrations.
 BFF_BASE_URL = "https://bff.itsoptimal.com"
 
+CONF_SCAN_INTERVAL = "scan_interval"
 DEFAULT_SCAN_INTERVAL = 30
+MIN_SCAN_INTERVAL = 15
+MAX_SCAN_INTERVAL = 300
+
+SERVICE_SET_SCAN_INTERVAL = "set_scan_interval"
 
 ATTR_FLOW_RATE = "flow_rate_gpm"
 ATTR_INLET_TEMP = "inlet_temperature"

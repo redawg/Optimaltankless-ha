@@ -6,14 +6,24 @@ import logging
 
 from typing import TYPE_CHECKING
 
+import voluptuous as vol
+
 from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import Platform
-from homeassistant.core import HomeAssistant
-from homeassistant.exceptions import ConfigEntryNotReady
+from homeassistant.core import HomeAssistant, ServiceCall
+from homeassistant.exceptions import ConfigEntryNotReady, ServiceValidationError
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import OptimalTanklessAPI, OptimalTanklessConnectionError
-from .const import CONF_SERIAL_NUMBER, DOMAIN
+from .const import (
+    CONF_SCAN_INTERVAL,
+    CONF_SERIAL_NUMBER,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    MAX_SCAN_INTERVAL,
+    MIN_SCAN_INTERVAL,
+    SERVICE_SET_SCAN_INTERVAL,
+)
 from .coordinator import OptimalTanklessCoordinator
 
 _LOGGER = logging.getLogger(__name__)
@@ -29,6 +39,50 @@ if TYPE_CHECKING:
     OptimalTanklessConfigEntry = ConfigEntry[OptimalTanklessCoordinator]
 else:
     OptimalTanklessConfigEntry = ConfigEntry
+
+SET_SCAN_INTERVAL_SCHEMA = vol.Schema(
+    {
+        vol.Optional("config_entry_id"): str,
+        vol.Required(CONF_SCAN_INTERVAL): vol.All(
+            vol.Coerce(int),
+            vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL),
+        ),
+    }
+)
+
+
+def _scan_interval_from_entry(entry: ConfigEntry) -> int:
+    """Return the configured polling interval for a config entry."""
+    return int(entry.options.get(CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL))
+
+
+async def _async_update_listener(
+    hass: HomeAssistant, entry: OptimalTanklessConfigEntry
+) -> None:
+    """Apply option changes without reloading entities."""
+    coordinator = entry.runtime_data
+    if coordinator is None:
+        return
+    coordinator.set_scan_interval(_scan_interval_from_entry(entry))
+
+
+async def _async_set_scan_interval(hass: HomeAssistant, call: ServiceCall) -> None:
+    """Update polling interval for one or all Optimal Tankless entries."""
+    scan_interval = int(call.data[CONF_SCAN_INTERVAL])
+    target_entry_id = call.data.get("config_entry_id")
+
+    entries = hass.config_entries.async_entries(DOMAIN)
+    if target_entry_id:
+        entries = [entry for entry in entries if entry.entry_id == target_entry_id]
+
+    if not entries:
+        raise ServiceValidationError("No Optimal Tankless config entries matched")
+
+    for entry in entries:
+        hass.config_entries.async_update_entry(
+            entry,
+            options={**entry.options, CONF_SCAN_INTERVAL: scan_interval},
+        )
 
 
 async def async_setup_entry(hass: HomeAssistant, entry: OptimalTanklessConfigEntry) -> bool:
@@ -51,6 +105,20 @@ async def async_setup_entry(hass: HomeAssistant, entry: OptimalTanklessConfigEnt
 
     entry.runtime_data = coordinator
     await hass.config_entries.async_forward_entry_setups(entry, PLATFORMS)
+
+    if not hass.services.has_service(DOMAIN, SERVICE_SET_SCAN_INTERVAL):
+
+        async def async_set_scan_interval(call: ServiceCall) -> None:
+            await _async_set_scan_interval(hass, call)
+
+        hass.services.async_register(
+            DOMAIN,
+            SERVICE_SET_SCAN_INTERVAL,
+            async_set_scan_interval,
+            schema=SET_SCAN_INTERVAL_SCHEMA,
+        )
+
+    entry.async_on_unload(entry.add_update_listener(_async_update_listener))
     return True
 
 
@@ -58,4 +126,8 @@ async def async_unload_entry(hass: HomeAssistant, entry: OptimalTanklessConfigEn
     """Unload a config entry."""
     if unload_ok := await hass.config_entries.async_unload_platforms(entry, PLATFORMS):
         entry.runtime_data = None
+
+    if unload_ok and not hass.config_entries.async_entries(DOMAIN):
+        hass.services.async_remove(DOMAIN, SERVICE_SET_SCAN_INTERVAL)
+
     return unload_ok

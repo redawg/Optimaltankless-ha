@@ -18,7 +18,32 @@ Example serial: `1212230005`
 - Water heater setpoint control
 - Vacation mode (via device `configData` flags)
 - Live telemetry: inlet/outlet temp, flow, power, voltage, diagnostics
-- Cloud polling (default 30s)
+- Cloud polling (default 30s, configurable 15–300s)
+
+## Polling interval
+
+Set when adding the integration, or later via **Configure** on the integration page (15–300 seconds).
+
+Automations and other integrations can also change it:
+
+```yaml
+# Service call
+service: optimaltankless.set_scan_interval
+data:
+  scan_interval: 60
+target:
+  config_entry_id: YOUR_ENTRY_ID
+
+# Or the generic config entry action
+action: config_entries.update
+target:
+  config_entry_id: YOUR_ENTRY_ID
+data:
+  options:
+    scan_interval: 60
+```
+
+Changes apply immediately without restarting Home Assistant.
 
 ## API
 

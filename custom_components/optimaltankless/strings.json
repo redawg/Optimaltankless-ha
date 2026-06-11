@@ -6,7 +6,8 @@
         "description": "Enter the serial number from your Opti+ label or the Optimal° app. No cloud account is required — the heater is controlled via its public device API.",
         "data": {
           "serial_number": "Serial number",
-          "device_name": "Name (optional)"
+          "device_name": "Name (optional)",
+          "scan_interval": "Polling interval (seconds)"
         }
       }
     },

@@ -13,14 +13,26 @@ from homeassistant.data_entry_flow import FlowResult
 from homeassistant.helpers.aiohttp_client import async_get_clientsession
 
 from .api import OptimalTanklessAPI, OptimalTanklessConnectionError
-from .const import CONF_SERIAL_NUMBER, DEFAULT_SCAN_INTERVAL, DOMAIN
+from .const import (
+    CONF_SCAN_INTERVAL,
+    CONF_SERIAL_NUMBER,
+    DEFAULT_SCAN_INTERVAL,
+    DOMAIN,
+    MAX_SCAN_INTERVAL,
+    MIN_SCAN_INTERVAL,
+)
 
 _LOGGER = logging.getLogger(__name__)
+
+SCAN_INTERVAL_SCHEMA = vol.All(
+    vol.Coerce(int), vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)
+)
 
 SETUP_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_SERIAL_NUMBER): str,
         vol.Optional("device_name"): str,
+        vol.Optional(CONF_SCAN_INTERVAL, default=DEFAULT_SCAN_INTERVAL): SCAN_INTERVAL_SCHEMA,
     }
 )
 
@@ -53,12 +65,16 @@ class OptimalTanklessConfigFlow(ConfigFlow, domain=DOMAIN):
                     errors[CONF_SERIAL_NUMBER] = "device_not_found"
                 else:
                     name = user_input.get("device_name") or f"Opti {serial}"
+                    scan_interval = user_input.get(
+                        CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
+                    )
                     return self.async_create_entry(
                         title=f"{name} ({serial})",
                         data={
                             CONF_SERIAL_NUMBER: serial,
                             "device_name": name,
                         },
+                        options={CONF_SCAN_INTERVAL: scan_interval},
                     )
 
         return self.async_show_form(
@@ -93,11 +109,11 @@ class OptimalTanklessOptionsFlowHandler(OptionsFlow):
             data_schema=vol.Schema(
                 {
                     vol.Optional(
-                        "scan_interval",
+                        CONF_SCAN_INTERVAL,
                         default=self.config_entry.options.get(
-                            "scan_interval", DEFAULT_SCAN_INTERVAL
+                            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
                         ),
-                    ): vol.All(vol.Coerce(int), vol.Range(min=15, max=300)),
+                    ): SCAN_INTERVAL_SCHEMA,
                 }
             ),
         )
