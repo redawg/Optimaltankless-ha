@@ -29,6 +29,12 @@ SCAN_INTERVAL_SCHEMA = vol.All(
     vol.Coerce(int), vol.Range(min=MIN_SCAN_INTERVAL, max=MAX_SCAN_INTERVAL)
 )
 
+OPTIONS_SCHEMA = vol.Schema(
+    {
+        vol.Required(CONF_SCAN_INTERVAL): SCAN_INTERVAL_SCHEMA,
+    }
+)
+
 SETUP_SCHEMA = vol.Schema(
     {
         vol.Required(CONF_SERIAL_NUMBER): str,
@@ -101,17 +107,13 @@ class OptimalTanklessOptionsFlowHandler(OptionsFlow):
         if user_input is not None:
             return self.async_create_entry(title="", data=user_input)
 
-        options = entry_options(self.config_entry)
+        suggested = entry_options(self.config_entry)
+        if CONF_SCAN_INTERVAL not in suggested:
+            suggested[CONF_SCAN_INTERVAL] = DEFAULT_SCAN_INTERVAL
+
         return self.async_show_form(
             step_id="init",
-            data_schema=vol.Schema(
-                {
-                    vol.Optional(
-                        CONF_SCAN_INTERVAL,
-                        default=options.get(
-                            CONF_SCAN_INTERVAL, DEFAULT_SCAN_INTERVAL
-                        ),
-                    ): SCAN_INTERVAL_SCHEMA,
-                }
+            data_schema=self.add_suggested_values_to_schema(
+                OPTIONS_SCHEMA, suggested
             ),
         )
